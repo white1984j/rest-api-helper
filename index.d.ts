@@ -29,6 +29,10 @@ interface Headers {
   [key: string]: string,
 }
 
+interface Params {
+  [key: string]: string,
+}
+
 interface Response {
   status: number,
   body: any,
@@ -38,7 +42,7 @@ interface Response {
 interface Request {
   withHeaders(headers: Headers): Request,
   withBody(body: Body): Request,
-  withParam(): Request,
+  withParam(params: Params): Request,
   fetch(): Promise<any>,
 }
 
