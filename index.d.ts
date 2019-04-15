@@ -38,7 +38,8 @@ interface Response {
 interface Request {
   withHeaders(headers: Headers): Request,
   withBody(body: Body): Request,
-  withParam(): Request,
+  shouldBeIntercepted(value?: boolean): Request,
+  withParam(name: string, value: string): Request,
   fetch(): Promise<any>,
 }
 

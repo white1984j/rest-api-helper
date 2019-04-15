@@ -19,7 +19,7 @@ export class RestApiHelper {
 	static build(url) {
 		if (url) {
 			try {
-				return new Request(copyObject(RestApiHelper._config.request[url]));
+				return new Request(copyObject(RestApiHelper._config.request[url]), url);
 			} catch (e) {
 				throw new Error(e);
 			}
@@ -52,9 +52,9 @@ export class RestApiHelper {
 		const options = new Options(config, RestApiHelper._config.baseURL, RestApiHelper._config.headers);
 
 		try {
-			Logger.log(`ApiHelper/FETCH (${options.getUrl()}): `, {url: options.getUrl(), ...options.getOptions()});
+			Logger.log(`ApiHelper/FETCH 	<${request.requestName}>: `, {url: options.getUrl(), ...options.getOptions()});
 			const response = await fetch(options.getUrl(), options.getOptions());
-			Logger.log('ApiHelper/COMPLETE:', {response}, 'blue');
+			Logger.log(`ApiHelper/COMPLETE 	<${request.requestName}>:`, {response}, 'blue');
 
 			responseHeaders = RestApiHelper._parseHeaders(response);
 
@@ -66,7 +66,7 @@ export class RestApiHelper {
 				} else {
 					responseBody = await response.formData()
 				}
-				Logger.log('ApiHelper/PARSE:', {
+				Logger.log(`ApiHelper/PARSE 	<${request.requestName}>:`, {
 					status: response.status,
 					body: responseBody,
 					headers: responseHeaders
@@ -79,15 +79,15 @@ export class RestApiHelper {
 				status: response.status,
 				body: responseBody,
 				headers: responseHeaders
-			});
+			}, request.isInterceptionEnabled, request.requestName);
 		} catch (error) {
 			throw error;
 		}
 	}
 
-	static _decorate(response) {
+	static _decorate(response, isInterceptionEnabled, requestName) {
 
-		if (RestApiHelper.interceptor) {
+		if (RestApiHelper.interceptor && isInterceptionEnabled) {
 			RestApiHelper.interceptor.delegate({
 				status: response.status,
 				meta: response
@@ -98,7 +98,7 @@ export class RestApiHelper {
 			return response;
 		}
 		const message = {status: `${response.status} ${RestApiHelper._config.statusDescription[response.status] || config.status[response.status]}`};
-		Logger.log('ApiHelper/ERROR:', message, 'red');
+		Logger.log(`ApiHelper/ERROR 	<${requestName}>:`, message, 'red');
 
 		throw new RequestError(`${response.status}`, `${RestApiHelper._config.statusDescription[response.status] || config.status[response.status]}`, JSON.stringify(response.body));
 	}
