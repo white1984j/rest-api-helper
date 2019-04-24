@@ -35,7 +35,7 @@ export class RestApiHelper {
 	static withConfig(config) {
 		RestApiHelper._config = config;
 		Logger.setOption(config.logger);
-		Logger.log('ApiHelper/CONFIG', {config});
+		Logger.log('apiHelper[CONFIG]', {config});
 		return RestApiHelper;
 	}
 
@@ -52,9 +52,9 @@ export class RestApiHelper {
 		const options = new Options(config, RestApiHelper._config.baseURL, RestApiHelper._config.headers);
 
 		try {
-			Logger.log(`ApiHelper/FETCH 	<${request.requestName}>: `, {url: options.getUrl(), ...options.getOptions()});
+			Logger.log(`apiHelper[${(options.getMethod()).toUpperCase()}]	[${options.getRequestUrl()}]: `, {url: options.getUrl(), ...options.getOptions()});
 			const response = await fetch(options.getUrl(), options.getOptions());
-			Logger.log(`ApiHelper/COMPLETE 	<${request.requestName}>:`, {response}, 'blue');
+			Logger.log(`apiHelper[COMPLETE]	[${options.getRequestUrl()}]:`, {response}, 'blue');
 
 			responseHeaders = RestApiHelper._parseHeaders(response);
 
@@ -66,7 +66,7 @@ export class RestApiHelper {
 				} else {
 					responseBody = await response.formData()
 				}
-				Logger.log(`ApiHelper/PARSE 	<${request.requestName}>:`, {
+				Logger.log(`apiHelper[PARSE]	[${options.getRequestUrl()}]:`, {
 					status: response.status,
 					body: responseBody,
 					headers: responseHeaders
@@ -79,7 +79,7 @@ export class RestApiHelper {
 				status: response.status,
 				body: responseBody,
 				headers: responseHeaders
-			}, request.isInterceptionEnabled, request.requestName);
+			}, request.isInterceptionEnabled, options.getRequestUrl());
 		} catch (error) {
 			throw error;
 		}
@@ -98,7 +98,7 @@ export class RestApiHelper {
 			return response;
 		}
 		const message = {status: `${response.status} ${RestApiHelper._config.statusDescription[response.status] || config.status[response.status]}`};
-		Logger.log(`ApiHelper/ERROR 	<${requestName}>:`, message, 'red');
+		Logger.log(`apiHelper[ERROR]	[${requestName}]:`, message, 'red');
 
 		throw new RequestError(`${response.status}`, `${RestApiHelper._config.statusDescription[response.status] || config.status[response.status]}`, JSON.stringify(response.body));
 	}
