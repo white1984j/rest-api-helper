@@ -3,7 +3,7 @@ import RFC from '../config/config';
 import { Options } from './Options';
 import { RequestError } from './RequestError';
 import { Request } from './Request';
-import { isApplicationJson, isTextPlain, copyObject, generateTag, fillString } from './utils';
+import { isApplicationJson, isTextPlain, copyObject, generateTag, fillString, APPLICATION_JSON } from './utils';
 
 export class RestApiHelper {
 	static _config = {};
@@ -61,7 +61,7 @@ export class RestApiHelper {
 			try {
 				if (isTextPlain(responseHeaders)) {
 					responseBody = await response.text();
-				} else if (isApplicationJson(responseHeaders)) {
+				} else if ((config.parseConfig && config.parseConfig['content-type'] === APPLICATION_JSON) || isApplicationJson(responseHeaders)) {
 					responseBody = await response.json();
 				} else {
 					responseBody = await response.formData();

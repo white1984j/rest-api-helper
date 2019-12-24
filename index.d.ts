@@ -4,6 +4,9 @@ interface RequestConfig {
   url: string,
   method: 'post' | 'get' | 'put' | 'delete' | 'head' | 'patch',
   headers?: Headers,
+  parseConfig?: {
+    [key: string]: string;
+  }
 }
 
 export interface Config {

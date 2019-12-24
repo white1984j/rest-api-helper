@@ -1,4 +1,4 @@
-const APPLICATION_JSON = 'application/json';
+export const APPLICATION_JSON = 'application/json';
 const TEXT_PLAIN = 'text/plain';
 
 export function copyObject(obj) {
